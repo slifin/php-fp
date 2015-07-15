@@ -1,7 +1,7 @@
 <?php
 
 namespace fp;
-
+class Placeholder{}
 /**
  * Returns a function that can be invoked without all required arguments.
  *
@@ -10,10 +10,11 @@ namespace fp;
  * @param callable $fn
  * @return \Closure
  */
-function curry(callable $fn) {
+function curry(callable $fn,...$start) {
     $rf = is_array($fn) ? new \ReflectionMethod(...$fn) : new \ReflectionFunction($fn);
-    return _curry($fn, [], $rf->getNumberOfRequiredParameters());
+    return _curry($fn,$start, $rf->getNumberOfRequiredParameters());
 }
+
 
 /**
  * Internal function used for the main currying functionality
@@ -24,13 +25,29 @@ function curry(callable $fn) {
  */
 function _curry(callable $fn, $appliedArgs, $requiredParameters) {
     return function (...$args) use ($fn, $appliedArgs, $requiredParameters) {
+
+        $originalArgs = $appliedArgs;
+        $newArgs = $args;
+
         array_push($appliedArgs, ...$args);
 
         // Get the number of arguments currently applied
-        $appliedArgsCount = count($appliedArgs);
+        $appliedArgsCount = count(array_filter($appliedArgs, function($v){
+            if ($v instanceof Placeholder){
+                return false;
+            }
+            return true;
+        }));
+
 
         // If we have the required number of arguments call the function
         if ($appliedArgsCount >= $requiredParameters) {
+            foreach($appliedArgs as $k=>$v){
+                if ($v instanceof Placeholder){
+                    $appliedArgs[$k] = $newArgs[$k];
+                    unset($appliedArgs[count($originalArgs)+$k]);
+                }
+            }
             return $fn(...$appliedArgs);
         // If we will have the required arguments on the next call, return an optimized function
         } elseif ($appliedArgsCount + 1 === $requiredParameters) {
