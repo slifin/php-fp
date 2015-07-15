@@ -44,7 +44,7 @@ function _curry(callable $fn, $appliedArgs, $requiredParameters) {
         if ($appliedArgsCount >= $requiredParameters) {
             foreach($appliedArgs as $k=>$v){
                 if ($v instanceof Placeholder){
-                    $appliedArgs[$k] = $newArgs[$k];
+                    $appliedArgs[$k] = array_shift($newArgs);
                     unset($appliedArgs[count($originalArgs)+$k]);
                 }
             }
