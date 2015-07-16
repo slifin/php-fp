@@ -3,9 +3,6 @@
 	"description": "Functional Programming Helpers",
 	"license": "MIT",
 	"authors": [{
-		"name": "Adrian Smith",
-		"email": "sfyire@gmail.com"
-		},{
 		"name": "Cam Spiers",
 		"email": "camspiers@gmail.com"
 	}],
